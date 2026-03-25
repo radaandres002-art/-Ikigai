@@ -1,0 +1,270 @@
+import React, { useState, useEffect } from 'react';
+import { Heart, Star, Globe, Wallet, Target, Info, Download, Trash2 } from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('pilar1');
+  const [answers, setAnswers] = useState({
+    pilar1: '', // Lo que amas
+    pilar2: '', // En lo que eres bueno
+    pilar3: '', // Lo que el mundo necesita
+    pilar4: ''  // Por lo que te pueden pagar
+  });
+
+  const [reflections, setReflections] = useState({
+    passion: '',
+    mission: '',
+    vocation: '',
+    profession: '',
+    ikigai: ''
+  });
+
+  // Cargar datos previos si existen (solo en sesión local)
+  useEffect(() => {
+    const saved = localStorage.getItem('ikigai_data');
+    if (saved) {
+      setAnswers(JSON.parse(saved));
+    }
+  }, []);
+
+  // Guardar automáticamente
+  useEffect(() => {
+    localStorage.setItem('ikigai_data', JSON.stringify(answers));
+    updateReflections();
+  }, [answers]);
+
+  const updateReflections = () => {
+    // Lógica simple para sugerir conexiones (visual)
+    setReflections({
+      passion: "Intersección entre lo que amas y tus talentos.",
+      mission: "Intersección entre lo que amas y el servicio al mundo.",
+      vocation: "Intersección entre las necesidades del mundo y tu sustento.",
+      profession: "Intersección entre tus habilidades y tu remuneración.",
+      ikigai: "El equilibrio total."
+    });
+  };
+
+  const handleInputChange = (pilar, value) => {
+    setAnswers(prev => ({ ...prev, [pilar]: value }));
+  };
+
+  const clearAll = () => {
+    if (confirm("¿Estás seguro de que quieres borrar todas tus respuestas? Esta acción no se puede deshacer.")) {
+      setAnswers({ pilar1: '', pilar2: '', pilar3: '', pilar4: '' });
+      localStorage.removeItem('ikigai_data');
+    }
+  };
+
+  const tabs = [
+    { id: 'pilar1', label: 'Lo que amas', icon: <Heart className="w-5 h-5" color="#ef4444" />, color: 'bg-red-50', border: 'border-red-500' },
+    { id: 'pilar2', label: 'Tus talentos', icon: <Star className="w-5 h-5" color="#f59e0b" />, color: 'bg-amber-50', border: 'border-amber-500' },
+    { id: 'pilar3', label: 'El mundo', icon: <Globe className="w-5 h-5" color="#10b981" />, color: 'bg-emerald-50', border: 'border-emerald-500' },
+    { id: 'pilar4', label: 'Tu sustento', icon: <Wallet className="w-5 h-5" color="#3b82f6" />, color: 'bg-blue-50', border: 'border-blue-500' },
+    { id: 'summary', label: 'Tu Ikigai', icon: <Target className="w-5 h-5" color="#8b5cf6" />, color: 'bg-purple-50', border: 'border-purple-500' }
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans text-slate-900">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+        
+        {/* Header */}
+        <div className="bg-slate-900 p-6 text-white text-center">
+          <h1 className="text-3xl font-bold mb-2">Mi Mapa de Ikigai</h1>
+          <p className="text-slate-400 text-sm">Tómate tu tiempo para responder con honestidad. Nadie más verá estas respuestas.</p>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap border-b border-slate-200">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 px-2 transition-all border-b-2 font-medium text-sm md:text-base
+                ${activeTab === tab.id ? `${tab.border} text-slate-900 ${tab.color}` : 'border-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
+            >
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6 md:p-10 min-h-[400px]">
+          
+          {activeTab === 'pilar1' && (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-red-100 rounded-lg"><Heart className="text-red-600" /></div>
+                <div>
+                  <h2 className="text-xl font-bold">¿Qué es lo que realmente amas?</h2>
+                  <p className="text-slate-500 text-sm">Tus pasiones, intereses, lo que te entusiasma.</p>
+                </div>
+              </div>
+              <textarea
+                value={answers.pilar1}
+                onChange={(e) => handleInputChange('pilar1', e.target.value)}
+                placeholder="Escribe sobre tus hobbies, temas que te interesan, actividades que te hacen feliz..."
+                className="w-full h-64 p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none outline-none text-lg"
+              />
+              <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-blue-800 text-sm">
+                <Info className="flex-shrink-0 w-5 h-5" />
+                <p>Consejo: No pienses en dinero o trabajo aquí. Solo en aquello que disfrutas por el simple hecho de hacerlo.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'pilar2' && (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-amber-100 rounded-lg"><Star className="text-amber-600" /></div>
+                <div>
+                  <h2 className="text-xl font-bold">¿En qué eres bueno?</h2>
+                  <p className="text-slate-500 text-sm">Tus talentos, habilidades y fortalezas.</p>
+                </div>
+              </div>
+              <textarea
+                value={answers.pilar2}
+                onChange={(e) => handleInputChange('pilar2', e.target.value)}
+                placeholder="Escribe sobre tus habilidades técnicas, talentos naturales, lo que otros dicen que haces bien..."
+                className="w-full h-64 p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none outline-none text-lg"
+              />
+              <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-blue-800 text-sm">
+                <Info className="flex-shrink-0 w-5 h-5" />
+                <p>Consejo: Incluye habilidades blandas como la escucha, la organización o el liderazgo, no solo títulos académicos.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'pilar3' && (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-emerald-100 rounded-lg"><Globe className="text-emerald-600" /></div>
+                <div>
+                  <h2 className="text-xl font-bold">¿Qué necesita el mundo de ti?</h2>
+                  <p className="text-slate-500 text-sm">Tus valores y cómo puedes ayudar a otros.</p>
+                </div>
+              </div>
+              <textarea
+                value={answers.pilar3}
+                onChange={(e) => handleInputChange('pilar3', e.target.value)}
+                placeholder="¿Qué problemas ves que podrías ayudar a resolver? ¿Qué le falta a tu comunidad o al mundo en general?"
+                className="w-full h-64 p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none outline-none text-lg"
+              />
+              <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-blue-800 text-sm">
+                <Info className="flex-shrink-0 w-5 h-5" />
+                <p>Consejo: El "mundo" puede ser tu familia, tu ciudad o la humanidad. Piensa en el impacto positivo.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'pilar4' && (
+            <div className="space-y-4 animate-in fade-in duration-500">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-blue-100 rounded-lg"><Wallet className="text-blue-600" /></div>
+                <div>
+                  <h2 className="text-xl font-bold">¿Por qué actividades podrías ser recompensado?</h2>
+                  <p className="text-slate-500 text-sm">Tu sustento y posibles profesiones.</p>
+                </div>
+              </div>
+              <textarea
+                value={answers.pilar4}
+                onChange={(e) => handleInputChange('pilar4', e.target.value)}
+                placeholder="¿Qué servicios o productos podrías ofrecer? ¿En qué mercados hay demanda para tus conocimientos?"
+                className="w-full h-64 p-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none outline-none text-lg"
+              />
+              <div className="bg-blue-50 p-4 rounded-lg flex gap-3 text-blue-800 text-sm">
+                <Info className="flex-shrink-0 w-5 h-5" />
+                <p>Consejo: No te limites a tu trabajo actual. Piensa en fuentes de ingresos alternativas o futuras.</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'summary' && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500">
+              <h2 className="text-2xl font-bold mb-6 text-center text-slate-800">Tu Resumen de Vida</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div className="p-5 border-l-4 border-red-400 bg-red-50 rounded-r-xl">
+                  <h3 className="font-bold text-red-800 mb-1">Lo que amas</h3>
+                  <p className="text-slate-600 line-clamp-3 italic text-sm">"{answers.pilar1 || 'Aún no completado'}"</p>
+                </div>
+                <div className="p-5 border-l-4 border-amber-400 bg-amber-50 rounded-r-xl">
+                  <h3 className="font-bold text-amber-800 mb-1">Tus talentos</h3>
+                  <p className="text-slate-600 line-clamp-3 italic text-sm">"{answers.pilar2 || 'Aún no completado'}"</p>
+                </div>
+                <div className="p-5 border-l-4 border-emerald-400 bg-emerald-50 rounded-r-xl">
+                  <h3 className="font-bold text-emerald-800 mb-1">Lo que el mundo necesita</h3>
+                  <p className="text-slate-600 line-clamp-3 italic text-sm">"{answers.pilar3 || 'Aún no completado'}"</p>
+                </div>
+                <div className="p-5 border-l-4 border-blue-400 bg-blue-50 rounded-r-xl">
+                  <h3 className="font-bold text-blue-800 mb-1">Por lo que te pueden pagar</h3>
+                  <p className="text-slate-600 line-clamp-3 italic text-sm">"{answers.pilar4 || 'Aún no completado'}"</p>
+                </div>
+              </div>
+
+              <div className="bg-purple-600 p-8 rounded-2xl text-white shadow-lg text-center">
+                <Target className="w-12 h-12 mx-auto mb-4 text-purple-200" />
+                <h3 className="text-2xl font-bold mb-4">Reflexión Final</h3>
+                <p className="text-purple-100 leading-relaxed mb-6">
+                  Observa los puntos en común entre tus respuestas. ¿Hay alguna actividad que aparezca en los cuatro cuadros? 
+                  Ese es tu **Ikigai**. Si solo aparece en tres o dos, ya tienes un camino marcado para seguir explorando.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                  <button 
+                    onClick={() => window.print()} 
+                    className="flex items-center gap-2 bg-white text-purple-700 px-6 py-2 rounded-full font-bold hover:bg-purple-50 transition-colors"
+                  >
+                    <Download className="w-4 h-4" /> Guardar/Imprimir
+                  </button>
+                  <button 
+                    onClick={clearAll}
+                    className="flex items-center gap-2 bg-purple-800 text-purple-200 px-6 py-2 rounded-full font-bold hover:bg-purple-900 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" /> Borrar todo
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+          <button
+            onClick={() => {
+              const currentIndex = tabs.findIndex(t => t.id === activeTab);
+              if (currentIndex > 0) setActiveTab(tabs[currentIndex - 1].id);
+            }}
+            disabled={activeTab === 'pilar1'}
+            className="px-6 py-2 rounded-lg font-medium text-slate-600 disabled:opacity-30 hover:bg-white border border-transparent hover:border-slate-200 transition-all"
+          >
+            Anterior
+          </button>
+          
+          <div className="flex gap-1">
+            {tabs.map(t => (
+              <div key={t.id} className={`w-2 h-2 rounded-full ${activeTab === t.id ? 'bg-slate-800 w-4' : 'bg-slate-300'} transition-all`}></div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => {
+              const currentIndex = tabs.findIndex(t => t.id === activeTab);
+              if (currentIndex < tabs.length - 1) setActiveTab(tabs[currentIndex + 1].id);
+            }}
+            className={`px-6 py-2 rounded-lg font-bold text-white transition-all shadow-md active:scale-95
+              ${activeTab === 'summary' ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-800 hover:bg-slate-900'}`}
+          >
+            {activeTab === 'summary' ? 'Finalizado' : 'Siguiente'}
+          </button>
+        </div>
+      </div>
+      
+      <p className="mt-8 text-center text-slate-400 text-xs italic">
+        "El sentido de la vida es encontrar tu don. El propósito de la vida es entregarlo."
+      </p>
+    </div>
+  );
+};
+
+export default App;
